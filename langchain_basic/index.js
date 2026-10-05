@@ -13,20 +13,24 @@ const llm = new ChatGoogleGenerativeAI({
   model: "gemini-3.1-flash-lite",
 });
 
-const question = await rl.question("Ask a question: ");
+while (true) {
+  const question = await rl.question("Ask a question: ");
 
-const aiMsg = await llm.invoke([
-  {
-    role: "system",
-    content:
-      "You are a helpful assistant. Please answer the following question. ",
-  },
-  {
-    role: "user",
-    content: question,
-  },
-]);
+  if (question.toLowerCase() === "exit") {
+    console.log("Exiting...");
+    break;
+  }
+  const aiMsg = await llm.invoke([
+    {
+      role: "system",
+      content:
+        "You are a helpful assistant. Please answer the following question. ",
+    },
+    {
+      role: "user",
+      content: question,
+    },
+  ]);
 
-console.log(aiMsg.content);
-
-rl.close();
+  console.log(aiMsg.content);
+}
