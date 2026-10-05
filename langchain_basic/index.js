@@ -5,12 +5,15 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
  */
 import readline from "node:readline/promises";
 
+// Import the stdin and stdout streams from the process module
 import { stdin as input, stdout as output } from "process";
 
+// Create a readline interface to read user input from the command line
 const rl = readline.createInterface({ input, output });
 
 const llm = new ChatGoogleGenerativeAI({
   model: "gemini-3.1-flash-lite",
+  streaming: true,
 });
 
 while (true) {
@@ -20,7 +23,7 @@ while (true) {
     console.log("Exiting...");
     break;
   }
-  const aiMsg = await llm.invoke([
+  const aiMsg = await llm.stream([
     {
       role: "system",
       content:
@@ -32,5 +35,8 @@ while (true) {
     },
   ]);
 
-  console.log(aiMsg.content);
+  for await (const part of aiMsg) {
+    process.stdout.write(part.content.toString());
+    process.stdout.write("\n");
+  }
 }
